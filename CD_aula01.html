@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Banco de Dados - Aula 1 - Clínica Bem-Estar</title>
+<style>
+:root{
+  --bg:#f4f7fb; --card:#ffffff; --ink:#172033; --muted:#5f6b7a;
+  --accent:#1f4f9a; --accent2:#3b72c4; --ok:#16794d; --bad:#b43b3b;
+  --line:#dfe6ef; --soft:#eaf1fb;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+header{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:28px 20px}
+header .wrap, main{max-width:1000px;margin:auto}
+h1{margin:0 0 8px;font-size:30px}
+header p{margin:0;opacity:.95}
+main{padding:22px 16px 50px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin:16px 0;box-shadow:0 5px 18px rgba(23,32,51,.06)}
+h2{margin-top:0;font-size:23px}
+h3{margin-bottom:8px}
+.badge{display:inline-block;background:var(--soft);color:var(--accent);padding:5px 9px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:10px}
+button{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--accent);color:white;margin:4px}
+button.secondary{background:#eef3f9;color:var(--ink);border:1px solid var(--line)}
+button.choice{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:600}
+button.choice:hover{border-color:var(--accent)}
+.feedback{margin-top:8px;font-weight:700}
+.ok{color:var(--ok)} .bad{color:var(--bad)}
+.progress{height:10px;background:#e4e9f1;border-radius:10px;overflow:hidden;margin-top:10px}
+.progress > div{height:100%;width:0;background:var(--accent2);transition:.2s}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.item{padding:14px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe}
+.item strong{display:block;margin-bottom:8px}
+select,input,textarea{width:100%;padding:9px;border:1px solid #cfd8e5;border-radius:8px;background:white}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+th{background:#eef3f9}
+.small{font-size:13px;color:var(--muted)}
+.hidden{display:none}
+.callout{border-left:5px solid var(--accent2);background:#f6f9fe;padding:12px 14px;border-radius:8px}
+.score{font-size:20px;font-weight:800}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:24px}
+</style></head>
+<body>
+<header><div class="wrap">
+<h1>Banco de Dados - Aula 1</h1>
+<p>Fundamentos de Banco de Dados e Levantamento de Requisitos</p>
+</div></header>
+<main>
+<section class="card">
+<span class="badge">MISSÃO DA AULA</span>
+<h2>Antes de criar tabelas, entenda o problema</h2>
+<p>A Clínica Bem-Estar registra informações em fichas e planilhas separadas. Sua missão é descobrir quais dados fazem sentido, quem usa essas informações e quais regras precisam ser respeitadas.</p>
+</section>
+
+<section class="card">
+  <span class="badge">ETAPA 1</span>
+  <h2>Dado ou informação?</h2>
+  <p>Responda rapidamente. A ideia é perceber quando um registro isolado passa a ter significado para uma decisão.</p>
+  <div class="quiz"><strong>1. "Paciente: Ana Souza"</strong><br>
+    <button class="choice" onclick="answer(this,true,'f1','É um registro isolado.')">Dado</button>
+    <button class="choice" onclick="answer(this,false,'f1','É um registro isolado, ainda sem interpretação.')">Informação</button>
+    <div id="f1" class="feedback"></div>
+  </div><hr>
+  <div class="quiz"><strong>2. "Hoje foram atendidos 38 pacientes"</strong><br>
+    <button class="choice" onclick="answer(this,false,'f2','Aqui os registros foram organizados para produzir um resultado.')">Dado</button>
+    <button class="choice" onclick="answer(this,true,'f2','Os dados foram organizados e ganharam significado.')">Informação</button>
+    <div id="f2" class="feedback"></div>
+  </div><hr>
+  <div class="quiz"><strong>3. "Data da consulta: 21/09/2026"</strong><br>
+    <button class="choice" onclick="answer(this,true,'f3','É um valor registrado sobre uma consulta.')">Dado</button>
+    <button class="choice" onclick="answer(this,false,'f3','É um valor isolado sobre a consulta.')">Informação</button>
+    <div id="f3" class="feedback"></div>
+  </div><hr>
+  <div class="quiz"><strong>4. "Cardiologia foi a especialidade com mais consultas no mês"</strong><br>
+    <button class="choice" onclick="answer(this,false,'f4','Isso resulta da análise e comparação de vários registros.')">Dado</button>
+    <button class="choice" onclick="answer(this,true,'f4','É uma conclusão obtida a partir dos dados.')">Informação</button>
+    <div id="f4" class="feedback"></div>
+  </div><hr>
+  <div class="quiz"><strong>5. "CRM do profissional: 12345"</strong><br>
+    <button class="choice" onclick="answer(this,true,'f5','É um atributo registrado sobre o profissional.')">Dado</button>
+    <button class="choice" onclick="answer(this,false,'f5','É um valor armazenado, não uma análise.')">Informação</button>
+    <div id="f5" class="feedback"></div>
+  </div><hr>
+  <div class="quiz"><strong>6. "20% das consultas agendadas foram canceladas"</strong><br>
+    <button class="choice" onclick="answer(this,false,'f6','Esse percentual foi obtido pela organização dos dados.')">Dado</button>
+    <button class="choice" onclick="answer(this,true,'f6','O percentual é informação produzida a partir dos registros.')">Informação</button>
+    <div id="f6" class="feedback"></div>
+  </div>
+  <div class="progress"><div id="bar"></div></div>
+  <p class="score">Placar: <span id="score">0</span> / <span id="answered">0</span></p>
+</section>
+
+
+<section class="card">
+  <span class="badge">ETAPA 2</span>
+  <h2>Investigando a Clínica Bem-Estar</h2>
+  <p>A clínica tem pacientes, profissionais, consultas e procedimentos. Classifique cada item conforme o levantamento de requisitos.</p>
+  <div class="grid">
+    <div class="item"><strong>Recepcionista</strong><select data-answer="usuario"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option><option value="entidade">Entidade candidata</option></select></div>
+    <div class="item"><strong>Agendar consulta</strong><select data-answer="processo"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option><option value="entidade">Entidade candidata</option></select></div>
+    <div class="item"><strong>Data e horário</strong><select data-answer="dado"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option><option value="entidade">Entidade candidata</option></select></div>
+    <div class="item"><strong>Paciente deve estar cadastrado antes do agendamento</strong><select data-answer="regra"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option><option value="entidade">Entidade candidata</option></select></div>
+    <div class="item"><strong>Paciente</strong><select data-answer="entidade"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option><option value="entidade">Entidade candidata</option></select></div>
+    <div class="item"><strong>Consultar histórico</strong><select data-answer="processo"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option><option value="entidade">Entidade candidata</option></select></div>
+  </div>
+  <button onclick="checkClassifications()">Conferir respostas</button>
+  <div id="classResult"></div>
+</section>
+
+
+<section class="card">
+  <span class="badge">ETAPA 3</span>
+  <h2>Monte a matriz de requisitos</h2>
+  <p>Associe cada exemplo à categoria correta.</p>
+  <table>
+    <tr><th>Exemplo</th><th>Categoria</th></tr>
+    <tr><td>Recepção</td><td><select class="matrix-select" data-answer="usuario"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option></select></td></tr>
+    <tr><td>Agendar consulta</td><td><select class="matrix-select" data-answer="processo"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option></select></td></tr>
+    <tr><td>Data e horário</td><td><select class="matrix-select" data-answer="dado"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option></select></td></tr>
+    <tr><td>Paciente deve estar cadastrado</td><td><select class="matrix-select" data-answer="regra"><option value="">Escolha</option><option value="usuario">Usuário</option><option value="processo">Processo</option><option value="dado">Dado</option><option value="regra">Regra</option></select></td></tr>
+  </table>
+  <button onclick="checkMatrix()">Conferir matriz</button>
+  <div id="matrixResult"></div>
+</section>
+
+
+<section class="card">
+  <span class="badge">DESAFIO FINAL</span>
+  <h2>A clínica começou a oferecer teleconsulta</h2>
+  <div class="callout">Antes de pensar em tabela ou SQL, identifique o que mudou no negócio.</div>
+  <p><strong>1.</strong> Quem são os usuários envolvidos?</p><textarea rows="2" placeholder="Digite sua resposta..."></textarea>
+  <p><strong>2.</strong> Quais novos dados podem precisar ser armazenados?</p><textarea rows="3" placeholder="Digite sua resposta..."></textarea>
+  <p><strong>3.</strong> Escreva pelo menos uma regra de negócio.</p><textarea rows="3" placeholder="Digite sua resposta..."></textarea>
+  <p><strong>4.</strong> Qual entidade candidata pode surgir ou ser alterada?</p><textarea rows="2" placeholder="Digite sua resposta..."></textarea>
+  <button class="secondary" onclick="toggle('hint')">Mostrar pistas</button>
+  <div id="hint" class="hidden callout">
+    Pense em paciente, profissional, link/sala da teleconsulta, horário, status, autorização e registro do atendimento.
+  </div>
+</section>
+
+
+<footer>Material de apoio para aula ao vivo - Banco de Dados - Aula 1</footer>
+</main>
+<script>
+let score=0, answered=0;
+function answer(el, correct, fbId, explanation){
+  const parent = el.closest('.quiz');
+  if(parent.dataset.done==="1") return;
+  parent.dataset.done="1";
+  answered++;
+  const fb=document.getElementById(fbId);
+  if(correct){score++; fb.textContent="Correto. "+explanation; fb.className="feedback ok";}
+  else{fb.textContent="Ainda não. "+explanation; fb.className="feedback bad";}
+  document.getElementById('score').textContent=score;
+  document.getElementById('answered').textContent=answered;
+  document.getElementById('bar').style.width=(answered/6*100)+"%";
+}
+function checkClassifications(){
+  let total=0, correct=0;
+  document.querySelectorAll('[data-answer]').forEach(sel=>{
+    total++;
+    if(sel.value===sel.dataset.answer){sel.style.borderColor="#16794d"; correct++;}
+    else{sel.style.borderColor="#b43b3b";}
+  });
+  const out=document.getElementById('classResult');
+  out.textContent=`Você acertou ${correct} de ${total}.`;
+  out.className="feedback "+(correct===total?"ok":"bad");
+}
+function checkMatrix(){
+  let total=0, correct=0;
+  document.querySelectorAll('.matrix-select').forEach(sel=>{
+    total++;
+    if(sel.value===sel.dataset.answer){sel.style.borderColor="#16794d"; correct++;}
+    else{sel.style.borderColor="#b43b3b";}
+  });
+  const out=document.getElementById('matrixResult');
+  out.textContent=`Matriz: ${correct} de ${total} classificações corretas.`;
+  out.className="feedback "+(correct===total?"ok":"bad");
+}
+function toggle(id){
+  document.getElementById(id).classList.toggle('hidden');
+}
+</script>
+</body></html>
